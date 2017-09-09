@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply font-sans antialiased text-secondary-800 dark:text-secondary-200;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-secondary-900;
+  }
+
+  .btn-primary {
+    @apply btn bg-secondary-900 text-white hover:bg-secondary-800 focus:ring-silver-400 dark:bg-silver-100 dark:text-secondary-900 dark:hover:bg-white;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-100 text-secondary-900 hover:bg-secondary-200 focus:ring-silver-400 dark:bg-secondary-800 dark:text-secondary-100 dark:hover:bg-secondary-700;
+  }
+
+  .btn-outline {
+    @apply btn border border-secondary-900 text-secondary-900 hover:bg-secondary-900 hover:text-white focus:ring-silver-400 dark:border-silver-300 dark:text-silver-100 dark:hover:bg-silver-100 dark:hover:text-secondary-900;
+  }
+
+  .section-padding {
+    @apply py-20 md:py-24;
+  }
+
+  .container-custom {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-secondary-700 via-silver-400 to-secondary-500 dark:from-silver-200 dark:via-silver-400 dark:to-silver-100 bg-clip-text text-transparent;
+  }
+
+  .bg-metallic {
+    @apply bg-gradient-to-br from-secondary-50 via-silver-100 to-secondary-100 dark:from-secondary-900 dark:via-secondary-800 dark:to-silver-900;
+    background-size: 200% 200%;
+  }
+
+  .surface {
+    @apply bg-white/80 dark:bg-secondary-800/60 border border-secondary-200/80 dark:border-secondary-700/60;
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .no-overflow {
+    overflow-x: hidden;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+}
