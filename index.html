@@ -28,7 +28,8 @@
     <!-- Google Analytics - Only loads in production -->
     <script>
       // Only load Google Analytics in production (not localhost)
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (!isLocalHost) {
         // Load gtag.js script
         var script = document.createElement('script');
         script.async = true;
@@ -38,21 +39,25 @@
       // Initialize Google Analytics
       window.dataLayer = window.dataLayer || [];
       function gtag(){
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-          dataLayer.push(arguments);
-        } else {
+        if (isLocalHost) {
           console.log('GA:', [...arguments]);
+        } else {
+          dataLayer.push(arguments);
         }
       }
       gtag('js', new Date());
       gtag('config', 'G-NPHGX2YJYW');
     </script>
+
     <title>Rob Higgins - Full Stack Developer</title>
+
     <script type="module" crossorigin src="/assets/index-d8dad6fa.js"></script>
     <link rel="stylesheet" href="/assets/index-6b73424f.css">
   </head>
+
   <body>
     <div id="root"></div>
     
   </body>
+
 </html>
