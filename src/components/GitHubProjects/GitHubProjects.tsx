@@ -3,8 +3,20 @@ import { GitHubRepo } from '@/types';
 import { fetchPublicRepos, GITHUB_PROFILE_URL } from '@/utils/github';
 import { trackProjectClick } from '@/utils';
 
+const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    className={className}
+    fill="currentColor"
+  >
+    <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z" />
+  </svg>
+);
+
 const RepoCard: React.FC<{ repo: GitHubRepo }> = ({ repo }) => {
   const topics = (repo.topics ?? []).slice(0, 4);
+  const youtubeUrls = repo.youtubeUrls ?? [];
   const [imageFailed, setImageFailed] = useState(false);
   const showScreenshot = Boolean(repo.screenshotUrl) && !imageFailed;
   const demoUrl = repo.homepage || null;
@@ -73,6 +85,28 @@ const RepoCard: React.FC<{ repo: GitHubRepo }> = ({ repo }) => {
           <div className="flex items-center justify-between gap-3 text-xs font-mono text-secondary-500 dark:text-silver-400">
             <span>{repo.language || '—'}</span>
             <div className="flex items-center gap-3 shrink-0">
+              {youtubeUrls.length > 0 && (
+                <div className="flex items-center gap-1.5">
+                  {youtubeUrls.map((url, index) => (
+                    <a
+                      key={url}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackProjectClick(repo.name, 'youtube')}
+                      className="text-secondary-500 hover:text-[#ff0000] dark:text-silver-400 dark:hover:text-[#ff0000] transition-colors"
+                      aria-label={
+                        youtubeUrls.length > 1
+                          ? `${repo.name} YouTube video ${index + 1}`
+                          : `${repo.name} YouTube video`
+                      }
+                      title="YouTube"
+                    >
+                      <YouTubeIcon className="w-4 h-4" />
+                    </a>
+                  ))}
+                </div>
+              )}
               {demoUrl && (
                 <a
                   href={demoUrl}
@@ -154,7 +188,7 @@ const GitHubProjects: React.FC = () => {
             Projects
           </h2>
           <p className="text-lg text-secondary-600 dark:text-secondary-300 max-w-2xl mx-auto">
-            Personal public repositories from GitHub.
+            Personal public repositories on GitHub.
           </p>
         </div>
 

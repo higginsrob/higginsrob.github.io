@@ -19,6 +19,8 @@ export interface GitHubRepo {
   private: boolean;
   /** First non-badge image from the repo README, if any */
   screenshotUrl?: string | null;
+  /** YouTube video URLs found in the repo README, if any */
+  youtubeUrls?: string[];
 }
 
 export interface Skill {

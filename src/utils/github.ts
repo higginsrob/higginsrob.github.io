@@ -102,7 +102,28 @@ export function extractScreenshotFromReadme(
   return null;
 }
 
-async function fetchReadmeScreenshot(repo: GitHubRepo): Promise<string | null> {
+const YOUTUBE_URL_REGEX =
+  /https?:\/\/(?:(?:www|m)\.)?(?:youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?:[^\s)\]>"']*)?/gi;
+
+/** Normalize and dedupe YouTube links found in README markdown. */
+export function extractYouTubeUrlsFromReadme(markdown: string): string[] {
+  const seen = new Set<string>();
+  const urls: string[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = YOUTUBE_URL_REGEX.exec(markdown)) !== null) {
+    const videoId = match[1];
+    if (seen.has(videoId)) continue;
+    seen.add(videoId);
+    urls.push(`https://www.youtube.com/watch?v=${videoId}`);
+  }
+
+  return urls;
+}
+
+async function fetchReadmeExtras(
+  repo: GitHubRepo
+): Promise<{ screenshotUrl: string | null; youtubeUrls: string[] }> {
   const branch = repo.default_branch || 'main';
   const readmeNames = ['README.md', 'readme.md', 'Readme.md'];
 
@@ -113,13 +134,16 @@ async function fetchReadmeScreenshot(repo: GitHubRepo): Promise<string | null> {
       );
       if (!response.ok) continue;
       const markdown = await response.text();
-      return extractScreenshotFromReadme(markdown, repo.full_name, branch);
+      return {
+        screenshotUrl: extractScreenshotFromReadme(markdown, repo.full_name, branch),
+        youtubeUrls: extractYouTubeUrlsFromReadme(markdown),
+      };
     } catch {
       // try next name
     }
   }
 
-  return null;
+  return { screenshotUrl: null, youtubeUrls: [] };
 }
 
 export async function fetchPublicRepos(): Promise<GitHubRepo[]> {
@@ -150,14 +174,14 @@ export async function fetchPublicRepos(): Promise<GitHubRepo[]> {
       (a, b) => new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime()
     );
 
-  const withScreenshots = await Promise.all(
+  const withReadmeExtras = await Promise.all(
     filtered.map(async (repo) => {
-      const screenshotUrl = await fetchReadmeScreenshot(repo);
-      return { ...repo, screenshotUrl };
+      const { screenshotUrl, youtubeUrls } = await fetchReadmeExtras(repo);
+      return { ...repo, screenshotUrl, youtubeUrls };
     })
   );
 
-  return withScreenshots;
+  return withReadmeExtras;
 }
 
 export const GITHUB_PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`;
