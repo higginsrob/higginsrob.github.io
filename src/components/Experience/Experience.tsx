@@ -2,6 +2,59 @@ import React, { useState } from 'react';
 import Lightbox from '../Lightbox';
 import { trackImageClick } from '@/utils';
 
+const MONTHS: Record<string, number> = {
+  Jan: 0,
+  Feb: 1,
+  Mar: 2,
+  Apr: 3,
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11,
+};
+
+function parseMonthYear(value: string): { year: number; month: number } | null {
+  const match = value.trim().match(/^([A-Za-z]{3})\s+(\d{4})$/);
+  if (!match) return null;
+  const month = MONTHS[match[1]];
+  if (month === undefined) return null;
+  return { year: Number(match[2]), month };
+}
+
+function pluralize(count: number, singular: string): string {
+  return `${count} ${count === 1 ? singular : `${singular}s`}`;
+}
+
+/** Turn "Oct 2024 – Feb 2026" into "1 year, 4 months". */
+function formatTenure(range: string, now = new Date()): string | null {
+  const [startRaw, endRaw] = range.split(/\s+[–-]\s+/);
+  if (!startRaw || !endRaw) return null;
+
+  const start = parseMonthYear(startRaw);
+  if (!start) return null;
+
+  const end = /^present$/i.test(endRaw.trim())
+    ? { year: now.getFullYear(), month: now.getMonth() }
+    : parseMonthYear(endRaw);
+  if (!end) return null;
+
+  const totalMonths = (end.year - start.year) * 12 + (end.month - start.month);
+  if (totalMonths < 0) return null;
+
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  const parts = [
+    years > 0 ? pluralize(years, 'year') : '',
+    months > 0 ? pluralize(months, 'month') : '',
+  ].filter(Boolean);
+
+  return parts.join(', ') || '0 months';
+}
+
 interface ExperienceItem {
   company: string;
   positions: {
@@ -150,24 +203,28 @@ const Experience: React.FC = () => {
               </div>
 
               <div className="space-y-8">
-                {exp.positions.map((position) => (
-                  <div key={`${exp.company}-${position.title}`}>
-                    <h4 className="text-base font-semibold text-secondary-800 dark:text-silver-200">
-                      {position.title}
-                    </h4>
-                    <p className="font-mono text-xs text-secondary-500 dark:text-secondary-400 mt-1 mb-3">
-                      {position.duration}
-                    </p>
-                    <ul className="space-y-2 text-secondary-700 dark:text-secondary-300">
-                      {position.description.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-[15px] leading-relaxed">
-                          <span className="text-silver-500 mt-2 text-[8px]">●</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                {exp.positions.map((position) => {
+                  const tenure = formatTenure(position.duration);
+                  return (
+                    <div key={`${exp.company}-${position.title}`}>
+                      <h4 className="text-base font-semibold text-secondary-800 dark:text-silver-200">
+                        {position.title}
+                      </h4>
+                      <p className="font-mono text-xs text-secondary-500 dark:text-secondary-400 mt-1 mb-3">
+                        {position.duration}
+                        {tenure ? <span> · {tenure}</span> : null}
+                      </p>
+                      <ul className="space-y-2 text-secondary-700 dark:text-secondary-300">
+                        {position.description.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-[15px] leading-relaxed">
+                            <span className="text-silver-500 mt-2 text-[8px]">●</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="flex flex-wrap gap-2 mt-6">

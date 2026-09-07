@@ -168,7 +168,8 @@ export async function fetchPublicRepos(): Promise<GitHubRepo[]> {
         !repo.fork &&
         !repo.archived &&
         !repo.private &&
-        !REPO_DENYLIST.has(repo.name)
+        !REPO_DENYLIST.has(repo.name) &&
+        Boolean(repo.description?.trim())
     )
     .sort(
       (a, b) => new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime()

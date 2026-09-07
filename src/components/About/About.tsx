@@ -18,8 +18,8 @@ const About: React.FC = () => {
 
           <div className="space-y-5 text-lg text-secondary-600 dark:text-secondary-300 leading-relaxed">
             <p>
-              Staff-level software engineer with 10+ years building and owning production systems at
-              scale. Early engineer at Vertebrae, I owned cloud infrastructure, microservices, SDKs,
+              Staff-level software engineer with 10+ years building and owning production systems.
+              Early engineer at Vertebrae, I owned cloud infrastructure, microservices, SDKs,
               and merchant integrations for an AR/VR e-commerce platform through Snap&apos;s
               acquisition in 2021.
             </p>
@@ -28,11 +28,6 @@ const About: React.FC = () => {
               integrations, and web AR with Three.js and Camera Kit. At Panorama AI I owned the core
               data and ML infrastructure behind LLM products—event ingestion, ETL, predictive
               recommendations, and embeddable client surfaces—and served as Head of Engineering.
-            </p>
-            <p>
-              I look for Staff Product, Staff Platform, and AI Platform roles at product companies,
-              remote or Denver hybrid. TypeScript and Node first; architecture and shipping still
-              hands-on.
             </p>
           </div>
 

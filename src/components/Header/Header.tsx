@@ -73,7 +73,7 @@ const Header: React.FC = () => {
             Rob Higgins
           </a>
 
-          <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
             {navigation.map((item) => (
               <a
                 key={item.label}

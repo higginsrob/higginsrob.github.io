@@ -62,3 +62,11 @@ export {
 } from './analytics';
 
 export { fetchPublicRepos, GITHUB_PROFILE_URL } from './github';
+
+export {
+  fetchChannelVideos,
+  shortDescription,
+  youtubeEmbedUrl,
+  youtubeVideoIdFromUrl,
+  YOUTUBE_CHANNEL_URL,
+} from './youtube';

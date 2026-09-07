@@ -36,8 +36,9 @@ export const skills: Skill[] = [
 export const navigation: NavItem[] = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
-  { label: 'Experience', href: '#experience' },
   { label: 'Projects', href: '#projects' },
+  { label: 'Videos', href: '#videos' },
+  { label: 'Experience', href: '#experience' },
   { label: 'Skills', href: '#skills' },
 ];
 

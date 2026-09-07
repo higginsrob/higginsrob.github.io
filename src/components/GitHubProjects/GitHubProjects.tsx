@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { GitHubRepo } from '@/types';
 import { fetchPublicRepos, GITHUB_PROFILE_URL } from '@/utils/github';
-import { trackProjectClick } from '@/utils';
+import { trackProjectClick, youtubeEmbedUrl, youtubeVideoIdFromUrl } from '@/utils';
+import Lightbox from '../Lightbox';
 
 const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -14,7 +15,10 @@ const YouTubeIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const RepoCard: React.FC<{ repo: GitHubRepo }> = ({ repo }) => {
+const RepoCard: React.FC<{
+  repo: GitHubRepo;
+  onYouTubeClick: (repoName: string, url: string) => void;
+}> = ({ repo, onYouTubeClick }) => {
   const topics = (repo.topics ?? []).slice(0, 4);
   const youtubeUrls = repo.youtubeUrls ?? [];
   const [imageFailed, setImageFailed] = useState(false);
@@ -65,7 +69,7 @@ const RepoCard: React.FC<{ repo: GitHubRepo }> = ({ repo }) => {
         </div>
 
         <p className="text-sm text-secondary-600 dark:text-secondary-300 leading-relaxed flex-1 mb-4">
-          {repo.description || 'No description provided.'}
+          {repo.description}
         </p>
 
         <div className="mt-auto space-y-3">
@@ -91,9 +95,11 @@ const RepoCard: React.FC<{ repo: GitHubRepo }> = ({ repo }) => {
                     <a
                       key={url}
                       href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => trackProjectClick(repo.name, 'youtube')}
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                        e.preventDefault();
+                        onYouTubeClick(repo.name, url);
+                      }}
                       className="text-secondary-500 hover:text-[#ff0000] dark:text-silver-400 dark:hover:text-[#ff0000] transition-colors"
                       aria-label={
                         youtubeUrls.length > 1
@@ -151,6 +157,17 @@ const GitHubProjects: React.FC = () => {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeVideo, setActiveVideo] = useState<{ embedUrl: string; title: string } | null>(null);
+
+  const handleYouTubeClick = (repoName: string, url: string) => {
+    trackProjectClick(repoName, 'youtube');
+    const videoId = youtubeVideoIdFromUrl(url);
+    if (!videoId) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    setActiveVideo({ embedUrl: youtubeEmbedUrl(videoId), title: repoName });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -236,7 +253,7 @@ const GitHubProjects: React.FC = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {repos.map((repo) => (
-                <RepoCard key={repo.id} repo={repo} />
+                <RepoCard key={repo.id} repo={repo} onYouTubeClick={handleYouTubeClick} />
               ))}
             </div>
             <div className="text-center mt-10">
@@ -252,6 +269,13 @@ const GitHubProjects: React.FC = () => {
           </>
         )}
       </div>
+
+      <Lightbox
+        isOpen={activeVideo !== null}
+        onClose={() => setActiveVideo(null)}
+        url={activeVideo?.embedUrl ?? ''}
+        title={activeVideo?.title ?? ''}
+      />
     </section>
   );
 };
